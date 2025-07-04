@@ -48,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Check TypeScript
-        run: npx tsc --noEmit
+        run: npm run type-check
 
   code-quality:
     name: Code Quality
@@ -70,8 +70,4 @@ jobs:
 
       - name: Check code coverage
         run: npm run test:coverage
-        continue-on-error: true
-
-      - name: Check bundle size
-        run: npm run build:analyze
         continue-on-error: true 

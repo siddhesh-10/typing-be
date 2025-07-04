@@ -17,7 +17,10 @@
     "deploy:functions:prod": "npm run build && serverless deploy --stage prod",
     "remove": "serverless remove",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "type-check": "tsc --noEmit",
     "seed": "ts-node scripts/seed-data.ts"
   },
   "keywords": [
@@ -42,6 +45,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.0",
+    "@types/jest": "^29.0.0",
     "@types/node": "^18.0.0",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
