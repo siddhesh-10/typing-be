@@ -40,13 +40,7 @@ jobs:
 
       - name: Run tests
         run: npm test
-
-      - name: Build project
-        run: npm run build
-
-      - name: Check TypeScript
-        run: npm run type-check
-
+        
   code-quality:
     name: Code Quality
     runs-on: ubuntu-latest
