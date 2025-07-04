@@ -39,7 +39,7 @@ export class ChallengeService {
   }
 
   async getUserChallenges(userId: string, status?: string): Promise<TypingChallenge[]> {
-    let params: any = {
+    const params: any = {
       TableName: this.tableName,
       IndexName: 'UserIdIndex',
       KeyConditionExpression: 'userId = :userId',
@@ -82,7 +82,10 @@ export class ChallengeService {
     return await this.db.update<TypingChallenge>(this.tableName, challengeId, updates);
   }
 
-  async completeChallenge(challengeId: string, _winner: string): Promise<TypingChallenge | null> {
+  async completeChallenge(
+    challengeId: string,
+    _winner: string
+  ): Promise<TypingChallenge | null> {
     try {
       const challenge = await this.getChallengeById(challengeId);
       if (!challenge) {

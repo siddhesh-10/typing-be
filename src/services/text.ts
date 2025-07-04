@@ -53,7 +53,7 @@ export class TextService {
   }
 
   async getRandomText(category?: string, difficulty?: string): Promise<TypingText | null> {
-    let params: any = {
+    const params: any = {
       TableName: this.tableName
     };
 

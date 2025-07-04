@@ -290,7 +290,7 @@ export class AIService {
     userStats: { averageWpm: number; averageAccuracy: number; bestWpm: number },
     _trend: string
   ): number {
-    let targetWpm = userStats.averageWpm;
+    const targetWpm = userStats.averageWpm;
     
     // For now, keep it simple without trend analysis
     return Math.min(targetWpm, userStats.bestWpm + 10);
@@ -306,7 +306,9 @@ export class AIService {
     return 'expert';
   }
 
-  private selectCategory(_previousSessions: AISession[]): string {
+  private selectCategory(
+    _previousSessions: AISession[]
+  ): string {
     const categories = ['general', 'technology', 'literature', 'news', 'quotes'];
     
     // For now, return a random category
