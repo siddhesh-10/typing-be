@@ -1,0 +1,377 @@
+service: typing-practice-infrastructure
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  
+  # Environment variables that will be available to all functions
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    TYPING_TEXTS_TABLE: typing-texts-${self:provider.stage}
+    USERS_TABLE: users-${self:provider.stage}
+    SESSIONS_TABLE: sessions-${self:provider.stage}
+    LEADERBOARD_TABLE: leaderboard-${self:provider.stage}
+    CHALLENGES_TABLE: challenges-${self:provider.stage}
+    AI_SESSIONS_TABLE: ai-sessions-${self:provider.stage}
+    WEBSOCKET_CONNECTIONS_TABLE: websocket-connections-${self:provider.stage}
+    GEMINI_API_KEY: ${env:GEMINI_API_KEY}
+    ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS, '*'}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
+
+  # IAM role statements for Lambda functions
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - !GetAtt TypingTextsTable.Arn
+            - !GetAtt UsersTable.Arn
+            - !GetAtt SessionsTable.Arn
+            - !GetAtt LeaderboardTable.Arn
+            - !GetAtt ChallengesTable.Arn
+            - !GetAtt AISessionsTable.Arn
+            - !GetAtt WebSocketConnectionsTable.Arn
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminGetUser
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminUpdateUserAttributes
+            - cognito-idp:AdminDeleteUser
+            - cognito-idp:ListUsers
+          Resource: !GetAtt UserPool.Arn
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+          Resource: 
+            - "arn:aws:execute-api:${self:provider.region}:*:*/@connections/*"
+
+# DynamoDB Tables
+resources:
+  Resources:
+    # Typing Texts Table
+    TypingTextsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: typing-texts-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CategoryDifficultyIndex
+            KeySchema:
+              - AttributeName: category
+                KeyType: HASH
+              - AttributeName: difficulty
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: category
+                AttributeType: S
+              - AttributeName: difficulty
+                AttributeType: S
+
+    # Users Table
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: users-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: cognitoId
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: CognitoIdIndex
+            KeySchema:
+              - AttributeName: cognitoId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: cognitoId
+                AttributeType: S
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: email
+                AttributeType: S
+
+    # Sessions Table
+    SessionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sessions-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: userId
+                AttributeType: S
+              - AttributeName: createdAt
+                AttributeType: S
+
+    # Leaderboard Table
+    LeaderboardTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: leaderboard-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: type
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: TypeDateIndex
+            KeySchema:
+              - AttributeName: type
+                KeyType: HASH
+              - AttributeName: date
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: type
+                AttributeType: S
+              - AttributeName: date
+                AttributeType: S
+
+    # Challenges Table
+    ChallengesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: challenges-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: challengerId
+            AttributeType: S
+          - AttributeName: opponentId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ChallengerIdIndex
+            KeySchema:
+              - AttributeName: challengerId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: challengerId
+                AttributeType: S
+          - IndexName: OpponentIdIndex
+            KeySchema:
+              - AttributeName: opponentId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: opponentId
+                AttributeType: S
+
+    # AI Sessions Table
+    AISessionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ai-sessions-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: userId
+                AttributeType: S
+
+    # WebSocket Connections Table
+    WebSocketConnectionsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: websocket-connections-${self:provider.stage}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: connectionId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: connectionId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            AttributeDefinitions:
+              - AttributeName: userId
+                AttributeType: S
+
+    # Cognito User Pool
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: typing-practice-${self:provider.stage}
+        AutoVerifiedAttributes:
+          - email
+        UsernameAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: false
+        Schema:
+          - Name: email
+            AttributeDataType: String
+            Required: true
+            Mutable: true
+          - Name: username
+            AttributeDataType: String
+            Required: false
+            Mutable: true
+          - Name: country
+            AttributeDataType: String
+            Required: false
+            Mutable: true
+        AdminCreateUserConfig:
+          AllowAdminCreateUserOnly: false
+        EmailConfiguration:
+          EmailSendingAccount: COGNITO_DEFAULT
+
+    # Cognito User Pool Client
+    UserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: typing-practice-client-${self:provider.stage}
+        UserPoolId: !Ref UserPool
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+          - ALLOW_USER_SRP_AUTH
+        PreventUserExistenceErrors: true
+        SupportedIdentityProviders:
+          - COGNITO
+
+  # Outputs to be used by the functions serverless file
+  Outputs:
+    UserPoolId:
+      Description: Cognito User Pool ID
+      Value: !Ref UserPool
+      Export:
+        Name: !Sub "${AWS::StackName}-UserPoolId"
+    
+    UserPoolClientId:
+      Description: Cognito User Pool Client ID
+      Value: !Ref UserPoolClient
+      Export:
+        Name: !Sub "${AWS::StackName}-UserPoolClientId"
+    
+    TypingTextsTableName:
+      Description: Typing Texts DynamoDB Table Name
+      Value: !Ref TypingTextsTable
+      Export:
+        Name: !Sub "${AWS::StackName}-TypingTextsTable"
+    
+    UsersTableName:
+      Description: Users DynamoDB Table Name
+      Value: !Ref UsersTable
+      Export:
+        Name: !Sub "${AWS::StackName}-UsersTable"
+    
+    SessionsTableName:
+      Description: Sessions DynamoDB Table Name
+      Value: !Ref SessionsTable
+      Export:
+        Name: !Sub "${AWS::StackName}-SessionsTable"
+    
+    LeaderboardTableName:
+      Description: Leaderboard DynamoDB Table Name
+      Value: !Ref LeaderboardTable
+      Export:
+        Name: !Sub "${AWS::StackName}-LeaderboardTable"
+    
+    ChallengesTableName:
+      Description: Challenges DynamoDB Table Name
+      Value: !Ref ChallengesTable
+      Export:
+        Name: !Sub "${AWS::StackName}-ChallengesTable"
+    
+    AISessionsTableName:
+      Description: AI Sessions DynamoDB Table Name
+      Value: !Ref AISessionsTable
+      Export:
+        Name: !Sub "${AWS::StackName}-AISessionsTable"
+    
+    WebSocketConnectionsTableName:
+      Description: WebSocket Connections DynamoDB Table Name
+      Value: !Ref WebSocketConnectionsTable
+      Export:
+        Name: !Sub "${AWS::StackName}-WebSocketConnectionsTable" 

@@ -1,0 +1,114 @@
+{
+  "typingTexts": [
+    {
+      "id": "text_001",
+      "text": "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. Pangrams are often used to display font samples and test keyboards.",
+      "words": ["The", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog", "This", "pangram", "contains", "every", "letter", "of", "the", "alphabet", "at", "least", "once", "Pangrams", "are", "often", "used", "to", "display", "font", "samples", "and", "test", "keyboards"],
+      "category": "general",
+      "difficulty": "easy",
+      "language": "en",
+      "source": "Traditional pangram",
+      "wordCount": 31,
+      "estimatedTime": 1
+    },
+    {
+      "id": "text_002",
+      "text": "Programming is the art of telling another human being what one wants the computer to do. It requires logical thinking, problem-solving skills, and attention to detail. Every line of code must be written with precision and care.",
+      "words": ["Programming", "is", "the", "art", "of", "telling", "another", "human", "being", "what", "one", "wants", "the", "computer", "to", "do", "It", "requires", "logical", "thinking", "problem-solving", "skills", "and", "attention", "to", "detail", "Every", "line", "of", "code", "must", "be", "written", "with", "precision", "and", "care"],
+      "category": "technology",
+      "difficulty": "medium",
+      "language": "en",
+      "source": "Programming wisdom",
+      "wordCount": 36,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_003",
+      "text": "In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole, filled with the ends of worms and an oozy smell, nor yet a dry, bare, sandy hole with nothing in it to sit down on or to eat: it was a hobbit-hole, and that means comfort.",
+      "words": ["In", "a", "hole", "in", "the", "ground", "there", "lived", "a", "hobbit", "Not", "a", "nasty", "dirty", "wet", "hole", "filled", "with", "the", "ends", "of", "worms", "and", "an", "oozy", "smell", "nor", "yet", "a", "dry", "bare", "sandy", "hole", "with", "nothing", "in", "it", "to", "sit", "down", "on", "or", "to", "eat", "it", "was", "a", "hobbit-hole", "and", "that", "means", "comfort"],
+      "category": "literature",
+      "difficulty": "medium",
+      "language": "en",
+      "source": "The Hobbit by J.R.R. Tolkien",
+      "wordCount": 54,
+      "estimatedTime": 3
+    },
+    {
+      "id": "text_004",
+      "text": "Artificial intelligence is transforming the way we live and work. Machine learning algorithms can now process vast amounts of data to identify patterns and make predictions. This technology is being applied across industries from healthcare to finance.",
+      "words": ["Artificial", "intelligence", "is", "transforming", "the", "way", "we", "live", "and", "work", "Machine", "learning", "algorithms", "can", "now", "process", "vast", "amounts", "of", "data", "to", "identify", "patterns", "and", "make", "predictions", "This", "technology", "is", "being", "applied", "across", "industries", "from", "healthcare", "to", "finance"],
+      "category": "technology",
+      "difficulty": "hard",
+      "language": "en",
+      "source": "AI technology overview",
+      "wordCount": 37,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_005",
+      "text": "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.",
+      "words": ["The", "only", "way", "to", "do", "great", "work", "is", "to", "love", "what", "you", "do", "If", "you", "haven't", "found", "it", "yet", "keep", "looking", "Don't", "settle", "As", "with", "all", "matters", "of", "the", "heart", "you'll", "know", "when", "you", "find", "it"],
+      "category": "quotes",
+      "difficulty": "easy",
+      "language": "en",
+      "source": "Steve Jobs",
+      "wordCount": 36,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_006",
+      "text": "Climate change represents one of the most pressing challenges of our time. Rising global temperatures are causing unprecedented changes to our planet's ecosystems. Scientists warn that immediate action is necessary to prevent catastrophic consequences.",
+      "words": ["Climate", "change", "represents", "one", "of", "the", "most", "pressing", "challenges", "of", "our", "time", "Rising", "global", "temperatures", "are", "causing", "unprecedented", "changes", "to", "our", "planet's", "ecosystems", "Scientists", "warn", "that", "immediate", "action", "is", "necessary", "to", "prevent", "catastrophic", "consequences"],
+      "category": "news",
+      "difficulty": "hard",
+      "language": "en",
+      "source": "Environmental science",
+      "wordCount": 33,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_007",
+      "text": "function calculateFibonacci(n) { if (n <= 1) return n; return calculateFibonacci(n - 1) + calculateFibonacci(n - 2); } This recursive function demonstrates the classic Fibonacci sequence implementation.",
+      "words": ["function", "calculateFibonacci", "n", "if", "n", "less", "than", "or", "equal", "to", "1", "return", "n", "return", "calculateFibonacci", "n", "minus", "1", "plus", "calculateFibonacci", "n", "minus", "2", "This", "recursive", "function", "demonstrates", "the", "classic", "Fibonacci", "sequence", "implementation"],
+      "category": "code",
+      "difficulty": "expert",
+      "language": "en",
+      "source": "Programming example",
+      "wordCount": 32,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_008",
+      "text": "Success is not final, failure is not fatal: it is the courage to continue that counts. Winston Churchill's words remind us that perseverance is the key to achieving our goals.",
+      "words": ["Success", "is", "not", "final", "failure", "is", "not", "fatal", "it", "is", "the", "courage", "to", "continue", "that", "counts", "Winston", "Churchill's", "words", "remind", "us", "that", "perseverance", "is", "the", "key", "to", "achieving", "our", "goals"],
+      "category": "quotes",
+      "difficulty": "medium",
+      "language": "en",
+      "source": "Winston Churchill",
+      "wordCount": 30,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_009",
+      "text": "The human brain contains approximately eighty-six billion neurons, each forming thousands of connections with other neurons. This complex network enables us to think, learn, remember, and experience consciousness.",
+      "words": ["The", "human", "brain", "contains", "approximately", "eighty-six", "billion", "neurons", "each", "forming", "thousands", "of", "connections", "with", "other", "neurons", "This", "complex", "network", "enables", "us", "to", "think", "learn", "remember", "and", "experience", "consciousness"],
+      "category": "general",
+      "difficulty": "expert",
+      "language": "en",
+      "source": "Neuroscience",
+      "wordCount": 29,
+      "estimatedTime": 2
+    },
+    {
+      "id": "text_010",
+      "text": "Time is the most valuable coin in your life. You and you alone will determine how that coin will be spent. Be careful that you do not let other people spend it for you.",
+      "words": ["Time", "is", "the", "most", "valuable", "coin", "in", "your", "life", "You", "and", "you", "alone", "will", "determine", "how", "that", "coin", "will", "be", "spent", "Be", "careful", "that", "you", "do", "not", "let", "other", "people", "spend", "it", "for", "you"],
+      "category": "quotes",
+      "difficulty": "easy",
+      "language": "en",
+      "source": "Carl Sandburg",
+      "wordCount": 35,
+      "estimatedTime": 2
+    }
+  ]
+} 

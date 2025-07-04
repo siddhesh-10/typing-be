@@ -1,0 +1,163 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '18'
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Security audit
+        run: npm audit --audit-level moderate
+
+  deploy-infrastructure-prod:
+    name: Deploy Infrastructure to Production
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy Infrastructure to Production
+        run: |
+          serverless deploy \
+            --config serverless-infrastructure.yml \
+            --stage prod \
+            --region ${{ env.AWS_REGION }} \
+            --verbose
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_PROD }}
+
+  deploy-functions-prod:
+    name: Deploy Functions to Production
+    runs-on: ubuntu-latest
+    needs: deploy-infrastructure-prod
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+
+      - name: Deploy Functions to Production
+        run: |
+          serverless deploy \
+            --stage prod \
+            --region ${{ env.AWS_REGION }} \
+            --verbose
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_PROD }}
+
+      - name: Get deployment info
+        run: |
+          echo "Production API URL: https://$(serverless info --stage prod --region ${{ env.AWS_REGION }} | grep 'ServiceEndpoint' | cut -d' ' -f2)"
+        continue-on-error: true
+
+      - name: Run smoke tests
+        run: |
+          # Add basic health check tests here
+          echo "Running production smoke tests..."
+          # Example: curl -f https://your-api-endpoint/health
+        continue-on-error: true
+
+  notify-prod:
+    name: Notify Production Team
+    runs-on: ubuntu-latest
+    needs: deploy-functions-prod
+    if: always() && needs.deploy-functions-prod.result != 'skipped'
+    
+    steps:
+      - name: Notify on success
+        if: needs.deploy-functions-prod.result == 'success'
+        run: |
+          echo "🚀 Production deployment successful!"
+          echo "Environment: Production"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Deployment Time: $(date)"
+
+      - name: Notify on failure
+        if: needs.deploy-functions-prod.result == 'failure'
+        run: |
+          echo "🚨 Production deployment failed!"
+          echo "Environment: Production"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Failure Time: $(date)" 

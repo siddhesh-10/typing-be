@@ -1,0 +1,418 @@
+service: typing-practice-backend
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  
+  # Environment variables that will be available to all functions
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    # Import table names from infrastructure stack ONLY (with fallbacks for local dev)
+    TYPING_TEXTS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.TypingTextsTableName, env:TYPING_TEXTS_TABLE, 'typing-texts-dev'}
+    USERS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.UsersTableName, env:USERS_TABLE, 'users-dev'}
+    SESSIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.SessionsTableName, env:SESSIONS_TABLE, 'sessions-dev'}
+    LEADERBOARD_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.LeaderboardTableName, env:LEADERBOARD_TABLE, 'leaderboard-dev'}
+    CHALLENGES_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.ChallengesTableName, env:CHALLENGES_TABLE, 'challenges-dev'}
+    AI_SESSIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.AISessionsTableName, env:AI_SESSIONS_TABLE, 'ai-sessions-dev'}
+    WEBSOCKET_CONNECTIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.WebSocketConnectionsTableName, env:WEBSOCKET_CONNECTIONS_TABLE, 'websocket-connections-dev'}
+    # Import Cognito resources from infrastructure stack (for production)
+    USER_POOL_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+    USER_POOL_CLIENT_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId, env:USER_POOL_CLIENT_ID}
+    # External API keys
+    GEMINI_API_KEY: ${env:GEMINI_API_KEY}
+    ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS, '*'}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
+
+  # IAM role statements for Lambda functions
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - !GetAtt TypingTextsTable.Arn
+            - !GetAtt UsersTable.Arn
+            - !GetAtt SessionsTable.Arn
+            - !GetAtt LeaderboardTable.Arn
+            - !GetAtt ChallengesTable.Arn
+            - !GetAtt AISessionsTable.Arn
+            - !GetAtt WebSocketConnectionsTable.Arn
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminGetUser
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminUpdateUserAttributes
+            - cognito-idp:AdminDeleteUser
+            - cognito-idp:ListUsers
+          Resource: !GetAtt UserPool.Arn
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+          Resource: 
+            - "arn:aws:execute-api:${self:provider.region}:*:*/@connections/*"
+
+# API Gateway configuration
+custom:
+  apiGateway:
+    restApiId: !Ref ApiGatewayRestApi
+    restApiRootResourceId: !GetAtt ApiGatewayRestApi.RootResourceId
+  serverless-offline:
+    httpPort: 3000
+    websocketPort: 3001
+    lambdaPort: 3002
+    useChildProcesses: true
+
+# Functions
+functions:
+  # User Functions
+  createUser:
+    handler: src/functions/user/createUser.handler
+    events:
+      - http:
+          path: /users
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+  getUser:
+    handler: src/functions/user/getUser.handler
+    events:
+      - http:
+          path: /users/{id}
+          method: get
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+  updateUser:
+    handler: src/functions/user/updateUser.handler
+    events:
+      - http:
+          path: /users/{id}
+          method: put
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+  deleteUser:
+    handler: src/functions/user/deleteUser.handler
+    events:
+      - http:
+          path: /users/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+  getLeaderboard:
+    handler: src/functions/user/getLeaderboard.handler
+    events:
+      - http:
+          path: /leaderboard
+          method: get
+          cors: true
+
+  # Text Functions
+  createText:
+    handler: src/functions/text/createText.handler
+    events:
+      - http:
+          path: /texts
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getTexts:
+    handler: src/functions/text/getTexts.handler
+    events:
+      - http:
+          path: /texts
+          method: get
+          cors: true
+
+  getTextById:
+    handler: src/functions/text/getTextById.handler
+    events:
+      - http:
+          path: /texts/{id}
+          method: get
+          cors: true
+
+  updateText:
+    handler: src/functions/text/updateText.handler
+    events:
+      - http:
+          path: /texts/{id}
+          method: put
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  deleteText:
+    handler: src/functions/text/deleteText.handler
+    events:
+      - http:
+          path: /texts/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  # Session Functions
+  createSession:
+    handler: src/functions/session/createSession.handler
+    events:
+      - http:
+          path: /sessions
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getUserSessions:
+    handler: src/functions/session/getUserSessions.handler
+    events:
+      - http:
+          path: /sessions/user/{userId}
+          method: get
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getSessionById:
+    handler: src/functions/session/getSessionById.handler
+    events:
+      - http:
+          path: /sessions/{id}
+          method: get
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  updateSession:
+    handler: src/functions/session/updateSession.handler
+    events:
+      - http:
+          path: /sessions/{id}
+          method: put
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  deleteSession:
+    handler: src/functions/session/deleteSession.handler
+    events:
+      - http:
+          path: /sessions/{id}
+          method: delete
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getBestSessions:
+    handler: src/functions/session/getBestSessions.handler
+    events:
+      - http:
+          path: /sessions/best
+          method: get
+          cors: true
+
+  getRecentSessions:
+    handler: src/functions/session/getRecentSessions.handler
+    events:
+      - http:
+          path: /sessions/recent
+          method: get
+          cors: true
+
+  # Challenge Functions
+  createChallenge:
+    handler: src/functions/challenge/createChallenge.handler
+    events:
+      - http:
+          path: /challenges
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getChallenge:
+    handler: src/functions/challenge/getChallenge.handler
+    events:
+      - http:
+          path: /challenges/{id}
+          method: get
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  getUserChallenges:
+    handler: src/functions/challenge/getUserChallenges.handler
+    events:
+      - http:
+          path: /challenges/user/{userId}
+          method: get
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  acceptChallenge:
+    handler: src/functions/challenge/acceptChallenge.handler
+    events:
+      - http:
+          path: /challenges/{id}/accept
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  declineChallenge:
+    handler: src/functions/challenge/declineChallenge.handler
+    events:
+      - http:
+          path: /challenges/{id}/decline
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  # AI Functions
+  createAISession:
+    handler: src/functions/ai/createAISession.handler
+    events:
+      - http:
+          path: /ai/sessions
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  generateText:
+    handler: src/functions/ai/generateText.handler
+    events:
+      - http:
+          path: /ai/texts
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  generateFeedback:
+    handler: src/functions/ai/generateFeedback.handler
+    events:
+      - http:
+          path: /ai/feedback
+          method: post
+          cors: true
+          authorizer:
+            name: cognitoAuthorizer
+            type: COGNITO_USER_POOLS
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+
+  # WebSocket Functions
+  websocketAuthorizer:
+    handler: src/functions/websocket/authorizer.handler
+
+  websocketConnect:
+    handler: src/functions/websocket/connect.handler
+    events:
+      - websocket:
+          route: $connect
+          authorizer:
+            name: websocketAuthorizer
+            identitySource:
+              - 'route.request.header.Authorization'
+
+  websocketDisconnect:
+    handler: src/functions/websocket/disconnect.handler
+    events:
+      - websocket:
+          route: $disconnect
+
+  websocketDefault:
+    handler: src/functions/websocket/default.handler
+    events:
+      - websocket:
+          route: $default
+
+# Resources (minimal, most resources are in infrastructure file)
+resources:
+  Resources:
+    # Cognito Authorizer for API Gateway
+    CognitoAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: cognitoAuthorizer
+        Type: COGNITO_USER_POOLS
+        IdentitySource: method.request.header.Authorization
+        RestApiId: !Ref ApiGatewayRestApi
+        ProviderARNs:
+          - ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+    # WebSocket Authorizer
+    WebSocketAuthorizer:
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: websocketAuthorizer
+        Type: COGNITO_USER_POOLS
+        IdentitySource: route.request.header.Authorization
+        RestApiId: !Ref ApiGatewayRestApi
+        ProviderARNs:
+          - ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+
+# Plugins
+plugins:
+  - serverless-offline
+  - serverless-typescript
+  - serverless-dotenv-plugin
