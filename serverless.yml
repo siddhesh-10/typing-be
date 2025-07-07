@@ -54,13 +54,13 @@ provider:
             - dynamodb:UpdateItem
             - dynamodb:DeleteItem
           Resource:
-            - !GetAtt TypingTextsTable.Arn
-            - !GetAtt UsersTable.Arn
-            - !GetAtt SessionsTable.Arn
-            - !GetAtt LeaderboardTable.Arn
-            - !GetAtt ChallengesTable.Arn
-            - !GetAtt AISessionsTable.Arn
-            - !GetAtt WebSocketConnectionsTable.Arn
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/typing-texts-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/users-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/sessions-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/leaderboard-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/challenges-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ai-sessions-${self:provider.stage}"
+            - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/websocket-connections-${self:provider.stage}"
         - Effect: Allow
           Action:
             - cognito-idp:AdminGetUser
@@ -68,7 +68,7 @@ provider:
             - cognito-idp:AdminUpdateUserAttributes
             - cognito-idp:AdminDeleteUser
             - cognito-idp:ListUsers
-          Resource: !GetAtt UserPool.Arn
+          Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}"
         - Effect: Allow
           Action:
             - execute-api:ManageConnections
