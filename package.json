@@ -21,7 +21,8 @@
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "type-check": "tsc --noEmit",
-    "seed": "ts-node scripts/seed-data.ts"
+    "seed": "ts-node scripts/seed-data.ts",
+    "setup:api": "./scripts/setup-api.sh"
   },
   "keywords": [
     "serverless",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.0",
     "@types/jest": "^29.0.0",
+    "@types/minimatch": "^6.0.0",
     "@types/node": "^18.0.0",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

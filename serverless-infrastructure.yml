@@ -69,10 +69,26 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: category
+            AttributeType: S
+          - AttributeName: difficulty
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
         GlobalSecondaryIndexes:
+          - IndexName: CategoryIndex
+            KeySchema:
+              - AttributeName: category
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          - IndexName: DifficultyIndex
+            KeySchema:
+              - AttributeName: difficulty
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
           - IndexName: CategoryDifficultyIndex
             KeySchema:
               - AttributeName: category
@@ -81,11 +97,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: category
-                AttributeType: S
-              - AttributeName: difficulty
-                AttributeType: S
 
     # Users Table
     UsersTable:

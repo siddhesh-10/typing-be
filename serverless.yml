@@ -8,6 +8,19 @@ provider:
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'}
   
+  # API Gateway configuration for API key authentication
+  apiGateway:
+    apiKeys:
+      - typing-practice-api-key-${self:provider.stage}
+    usagePlan:
+      quota:
+        limit: 10000
+        period: MONTH
+      throttle:
+        burstLimit: 200
+        rateLimit: 100
+    apiKeySource: HEADER
+  
   # Environment variables that will be available to all functions
   environment:
     STAGE: ${self:provider.stage}
@@ -24,7 +37,7 @@ provider:
     USER_POOL_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
     USER_POOL_CLIENT_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId, env:USER_POOL_CLIENT_ID}
     # External API keys
-    GEMINI_API_KEY: ${env:GEMINI_API_KEY}
+    GEMINI_API_KEY: ${env:GEMINI_API_KEY, ''}
     ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS, '*'}
     LOG_LEVEL: ${env:LOG_LEVEL, 'info'}
 
@@ -68,9 +81,9 @@ custom:
     restApiId: !Ref ApiGatewayRestApi
     restApiRootResourceId: !GetAtt ApiGatewayRestApi.RootResourceId
   serverless-offline:
-    httpPort: 3000
-    websocketPort: 3001
-    lambdaPort: 3002
+    httpPort: 3004
+    websocketPort: 3005
+    lambdaPort: 3003
     useChildProcesses: true
 
 # Functions
@@ -131,10 +144,12 @@ functions:
           path: /leaderboard
           method: get
           cors: true
+          private: true
 
   # Text Functions
   createText:
     handler: src/functions/text/createText.handler
+    private: true
     events:
       - http:
           path: /texts
@@ -152,6 +167,16 @@ functions:
           path: /texts
           method: get
           cors: true
+          private: true
+
+  getRandomText:
+    handler: src/functions/text/getRandomText.js
+    events:
+      - http:
+          path: /texts/random
+          method: get
+          cors: true
+          private: true
 
   getTextById:
     handler: src/functions/text/getTextById.handler
@@ -160,30 +185,16 @@ functions:
           path: /texts/{id}
           method: get
           cors: true
+          private: true
 
-  updateText:
-    handler: src/functions/text/updateText.handler
+  seedTexts:
+    handler: src/functions/text/seedTexts.js
     events:
       - http:
-          path: /texts/{id}
-          method: put
+          path: /texts/seed
+          method: post
           cors: true
-          authorizer:
-            name: cognitoAuthorizer
-            type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
-
-  deleteText:
-    handler: src/functions/text/deleteText.handler
-    events:
-      - http:
-          path: /texts/{id}
-          method: delete
-          cors: true
-          authorizer:
-            name: cognitoAuthorizer
-            type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+          private: true
 
   # Session Functions
   createSession:
@@ -253,6 +264,7 @@ functions:
           path: /sessions/best
           method: get
           cors: true
+          private: true
 
   getRecentSessions:
     handler: src/functions/session/getRecentSessions.handler
@@ -261,6 +273,7 @@ functions:
           path: /sessions/recent
           method: get
           cors: true
+          private: true
 
   # Challenge Functions
   createChallenge:
@@ -411,8 +424,40 @@ resources:
         ProviderARNs:
           - ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
 
+    # API Key for public endpoints
+    ApiKey:
+      Type: AWS::ApiGateway::ApiKey
+      Properties:
+        Name: typing-practice-api-key-${self:provider.stage}
+        Description: API Key for public endpoints authentication
+        Enabled: true
+        GenerateDistinctId: true
+
+    # Usage Plan for API Key
+    UsagePlan:
+      Type: AWS::ApiGateway::UsagePlan
+      Properties:
+        UsagePlanName: typing-practice-usage-plan-${self:provider.stage}
+        Description: Usage plan for typing practice API
+        ApiStages:
+          - ApiId: !Ref ApiGatewayRestApi
+            Stage: ${self:provider.stage}
+        Quota:
+          Limit: 10000
+          Period: MONTH
+        Throttle:
+          BurstLimit: 200
+          RateLimit: 100
+
+    # Usage Plan Key Association
+    UsagePlanKey:
+      Type: AWS::ApiGateway::UsagePlanKey
+      Properties:
+        KeyId: !Ref ApiKey
+        KeyType: API_KEY
+        UsagePlanId: !Ref UsagePlan
+
 # Plugins
 plugins:
   - serverless-offline
-  - serverless-typescript
   - serverless-dotenv-plugin
