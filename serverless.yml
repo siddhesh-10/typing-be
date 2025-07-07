@@ -145,7 +145,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getTexts:
     name: getTexts-${self:provider.stage}
@@ -197,7 +197,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getUserSessions:
     name: getUserSessions-${self:provider.stage}
@@ -208,7 +208,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getSessionById:
     name: getSessionById-${self:provider.stage}
@@ -219,7 +219,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   updateSession:
     name: updateSession-${self:provider.stage}
@@ -230,7 +230,7 @@ functions:
           method: put
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   deleteSession:
     name: deleteSession-${self:provider.stage}
@@ -241,7 +241,7 @@ functions:
           method: delete
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getBestSessions:
     name: getBestSessions-${self:provider.stage}
@@ -273,7 +273,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getChallenge:
     name: getChallenge-${self:provider.stage}
@@ -284,7 +284,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   getUserChallenges:
     name: getUserChallenges-${self:provider.stage}
@@ -295,7 +295,7 @@ functions:
           method: get
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   acceptChallenge:
     name: acceptChallenge-${self:provider.stage}
@@ -306,7 +306,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   declineChallenge:
     name: declineChallenge-${self:provider.stage}
@@ -317,7 +317,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   # AI Functions
   createAISession:
@@ -329,7 +329,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   generateText:
     name: generateText-${self:provider.stage}
@@ -340,7 +340,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   generateFeedback:
     name: generateFeedback-${self:provider.stage}
@@ -351,7 +351,7 @@ functions:
           method: post
           cors: true
           authorizer:
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${self:custom.COGNITOARN}
 
   # WebSocket Functions
   websocketAuthorizer:
@@ -386,16 +386,7 @@ functions:
 # Resources (minimal, most resources are in infrastructure file)
 resources:
   Resources:
-    # Cognito Authorizer for API Gateway
-    CognitoAuthorizer:
-      Type: AWS::ApiGateway::Authorizer
-      Properties:
-        Name: cognitoAuthorizer-${self:provider.stage}
-        Type: COGNITO_USER_POOLS
-        IdentitySource: method.request.header.Authorization
-        RestApiId: !Ref ApiGatewayRestApi
-        ProviderARNs:
-          - ${self:custom.COGNITOARN}
+    # No additional resources needed - using inline authorizers
 
 
 
