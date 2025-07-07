@@ -24,7 +24,6 @@ provider:
   # Environment variables that will be available to all functions
   environment:
     STAGE: ${self:provider.stage}
-    REGION: ${self:provider.region}
     # Import table names from infrastructure stack ONLY (with fallbacks for local dev)
     TYPING_TEXTS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.TypingTextsTableName, env:TYPING_TEXTS_TABLE, 'typing-texts-dev'}
     USERS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.UsersTableName, env:USERS_TABLE, 'users-dev'}
@@ -159,7 +158,7 @@ functions:
 
   getRandomText:
     name: getRandomText-${self:provider.stage}
-    handler: src/functions/text/getRandomText.js
+    handler: src/functions/text/getRandomText.ts
     events:
       - http:
           path: /texts/random
@@ -179,7 +178,7 @@ functions:
 
   seedTexts:
     name: seedTexts-${self:provider.stage}
-    handler: src/functions/text/seedTexts.js
+    handler: src/functions/text/seedTexts.ts
     events:
       - http:
           path: /texts/seed
