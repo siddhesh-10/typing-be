@@ -34,8 +34,8 @@ provider:
     AI_SESSIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.AISessionsTableName, env:AI_SESSIONS_TABLE, 'ai-sessions-dev'}
     WEBSOCKET_CONNECTIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.WebSocketConnectionsTableName, env:WEBSOCKET_CONNECTIONS_TABLE, 'websocket-connections-dev'}
     # Import Cognito resources from infrastructure stack (for production)
-    USER_POOL_ID: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
-    USER_POOL_CLIENT_ID: ${env:USER_POOL_CLIENT_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId}
+    USER_POOL_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+    USER_POOL_CLIENT_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId}
     # External API keys
     GEMINI_API_KEY: ${env:GEMINI_API_KEY, ''}
     ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS, '*'}
@@ -68,7 +68,7 @@ provider:
             - cognito-idp:AdminUpdateUserAttributes
             - cognito-idp:AdminDeleteUser
             - cognito-idp:ListUsers
-          Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
+          Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
         - Effect: Allow
           Action:
             - execute-api:ManageConnections
@@ -100,7 +100,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUser:
     name: getUser-${self:provider.stage}
@@ -113,7 +113,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   updateUser:
     name: updateUser-${self:provider.stage}
@@ -126,7 +126,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   deleteUser:
     name: deleteUser-${self:provider.stage}
@@ -139,7 +139,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getLeaderboard:
     name: getLeaderboard-${self:provider.stage}
@@ -164,7 +164,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getTexts:
     name: getTexts-${self:provider.stage}
@@ -218,7 +218,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUserSessions:
     name: getUserSessions-${self:provider.stage}
@@ -231,7 +231,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getSessionById:
     name: getSessionById-${self:provider.stage}
@@ -244,7 +244,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   updateSession:
     name: updateSession-${self:provider.stage}
@@ -257,7 +257,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   deleteSession:
     name: deleteSession-${self:provider.stage}
@@ -270,7 +270,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getBestSessions:
     name: getBestSessions-${self:provider.stage}
@@ -304,7 +304,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getChallenge:
     name: getChallenge-${self:provider.stage}
@@ -317,7 +317,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUserChallenges:
     name: getUserChallenges-${self:provider.stage}
@@ -330,7 +330,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   acceptChallenge:
     name: acceptChallenge-${self:provider.stage}
@@ -343,7 +343,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   declineChallenge:
     name: declineChallenge-${self:provider.stage}
@@ -356,7 +356,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   # AI Functions
   createAISession:
@@ -370,7 +370,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   generateText:
     name: generateText-${self:provider.stage}
@@ -383,7 +383,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   generateFeedback:
     name: generateFeedback-${self:provider.stage}
@@ -396,7 +396,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   # WebSocket Functions
   websocketAuthorizer:
@@ -440,7 +440,7 @@ resources:
         IdentitySource: method.request.header.Authorization
         RestApiId: !Ref ApiGatewayRestApi
         ProviderARNs:
-          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${env:USER_POOL_ID, cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
+          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
 
 
 
