@@ -411,7 +411,7 @@ resources:
         IdentitySource: method.request.header.Authorization
         RestApiId: !Ref ApiGatewayRestApi
         ProviderARNs:
-          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}"
+          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
 
     # WebSocket Authorizer
     WebSocketAuthorizer:
@@ -422,7 +422,7 @@ resources:
         IdentitySource: route.request.header.Authorization
         RestApiId: !Ref ApiGatewayRestApi
         ProviderARNs:
-          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}"
+          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
 
     # API Key for public endpoints
     ApiKey:
