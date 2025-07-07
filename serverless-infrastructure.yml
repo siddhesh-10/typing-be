@@ -121,18 +121,12 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: cognitoId
-                AttributeType: S
           - IndexName: EmailIndex
             KeySchema:
               - AttributeName: email
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: email
-                AttributeType: S
 
     # Sessions Table
     SessionsTable:
@@ -159,11 +153,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: userId
-                AttributeType: S
-              - AttributeName: createdAt
-                AttributeType: S
 
     # Leaderboard Table
     LeaderboardTable:
@@ -190,11 +179,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: type
-                AttributeType: S
-              - AttributeName: date
-                AttributeType: S
 
     # Challenges Table
     ChallengesTable:
@@ -219,18 +203,12 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: challengerId
-                AttributeType: S
           - IndexName: OpponentIdIndex
             KeySchema:
               - AttributeName: opponentId
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: opponentId
-                AttributeType: S
 
     # AI Sessions Table
     AISessionsTable:
@@ -253,9 +231,6 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: userId
-                AttributeType: S
 
     # WebSocket Connections Table
     WebSocketConnectionsTable:
@@ -278,9 +253,6 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-            AttributeDefinitions:
-              - AttributeName: userId
-                AttributeType: S
 
     # Cognito User Pool
     UserPool:
