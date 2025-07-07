@@ -413,16 +413,7 @@ resources:
         ProviderARNs:
           - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
 
-    # WebSocket Authorizer
-    WebSocketAuthorizer:
-      Type: AWS::ApiGateway::Authorizer
-      Properties:
-        Name: websocketAuthorizer
-        Type: COGNITO_USER_POOLS
-        IdentitySource: route.request.header.Authorization
-        RestApiId: !Ref ApiGatewayRestApi
-        ProviderARNs:
-          - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
+
 
     # API Key for public endpoints
     ApiKey:
