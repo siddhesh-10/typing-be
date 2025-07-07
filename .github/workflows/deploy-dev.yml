@@ -38,7 +38,6 @@ jobs:
     name: Deploy Infrastructure to Development
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
     
     steps:
       - name: Checkout code
@@ -77,8 +76,7 @@ jobs:
     name: Deploy Functions to Development
     runs-on: ubuntu-latest
     needs: deploy-infrastructure-dev
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
