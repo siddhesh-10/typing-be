@@ -317,6 +317,12 @@ resources:
       Export:
         Name: !Sub "${AWS::StackName}-UserPoolClientId"
     
+    CognitoUserPoolArn:
+      Description: Cognito User Pool ARN
+      Value: !GetAtt UserPool.Arn
+      Export:
+        Name: !Sub "${AWS::StackName}-CognitoUserPoolArn"
+    
     TypingTextsTableName:
       Description: Typing Texts DynamoDB Table Name
       Value: !Ref TypingTextsTable
