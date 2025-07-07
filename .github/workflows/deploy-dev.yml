@@ -76,6 +76,7 @@ jobs:
   #   name: Deploy Functions to Development
   #   runs-on: ubuntu-latest
   #   needs: deploy-infrastructure-dev
+  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feat/intial')
   #   steps:
   #     - name: Checkout code
   #       uses: actions/checkout@v4
@@ -116,7 +117,7 @@ jobs:
   #         echo "Development API URL: https://$(serverless info --stage dev --region ${{ env.AWS_REGION }} | grep 'ServiceEndpoint' | cut -d' ' -f2)"
   #       continue-on-error: true
 
-  notify-dev:
+  # notify-dev:
     name: Notify Development Team
     runs-on: ubuntu-latest
     needs: deploy-functions-dev
