@@ -28,8 +28,8 @@ export const verifyToken = async (token: string): Promise<MiddlewareAuthContext>
     
     return {
       userId: payload.sub,
-      username: payload.username || payload['cognito:username'] || '',
-      email: payload.email || '',
+      username: String(payload.username || payload['cognito:username'] || ''),
+      email: String(payload.email || ''),
       cognitoId: payload.sub
     };
   } catch (error) {
@@ -82,8 +82,8 @@ export const authenticateRequest = async (event: any): Promise<AuthContext> => {
     
     return {
       userId: payload.sub,
-      username: payload.username || payload['cognito:username'] || '',
-      email: payload.email || '',
+      username: String(payload.username || payload['cognito:username'] || ''),
+      email: String(payload.email || ''),
       cognitoId: payload.sub
     };
   } catch (error) {
