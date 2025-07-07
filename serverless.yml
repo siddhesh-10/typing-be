@@ -34,8 +34,8 @@ provider:
     AI_SESSIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.AISessionsTableName, env:AI_SESSIONS_TABLE, 'ai-sessions-dev'}
     WEBSOCKET_CONNECTIONS_TABLE: ${cf:typing-practice-infrastructure-${self:provider.stage}.WebSocketConnectionsTableName, env:WEBSOCKET_CONNECTIONS_TABLE, 'websocket-connections-dev'}
     # Import Cognito resources from infrastructure stack (for production)
-    USER_POOL_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
-    USER_POOL_CLIENT_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId, env:USER_POOL_CLIENT_ID}
+    USER_POOL_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
+    USER_POOL_CLIENT_ID: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolClientId}
     # External API keys
     GEMINI_API_KEY: ${env:GEMINI_API_KEY, ''}
     ALLOWED_ORIGINS: ${env:ALLOWED_ORIGINS, '*'}
@@ -68,7 +68,7 @@ provider:
             - cognito-idp:AdminUpdateUserAttributes
             - cognito-idp:AdminDeleteUser
             - cognito-idp:ListUsers
-          Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}"
+          Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}"
         - Effect: Allow
           Action:
             - execute-api:ManageConnections
@@ -99,7 +99,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUser:
     handler: src/functions/user/getUser.handler
@@ -111,7 +111,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   updateUser:
     handler: src/functions/user/updateUser.handler
@@ -123,7 +123,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   deleteUser:
     handler: src/functions/user/deleteUser.handler
@@ -135,7 +135,7 @@ functions:
           authorizer:
             name: cognitoAuthorizer
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID, 'us-east-1_test123456'}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getLeaderboard:
     handler: src/functions/user/getLeaderboard.handler
