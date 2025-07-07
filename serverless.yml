@@ -90,6 +90,7 @@ custom:
 functions:
   # User Functions
   createUser:
+    name: createUser-${self:provider.stage}
     handler: src/functions/user/createUser.handler
     events:
       - http:
@@ -97,11 +98,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
             arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUser:
+    name: getUser-${self:provider.stage}
     handler: src/functions/user/getUser.handler
     events:
       - http:
@@ -109,11 +111,12 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
             arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   updateUser:
+    name: updateUser-${self:provider.stage}
     handler: src/functions/user/updateUser.handler
     events:
       - http:
@@ -121,11 +124,12 @@ functions:
           method: put
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
             arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   deleteUser:
+    name: deleteUser-${self:provider.stage}
     handler: src/functions/user/deleteUser.handler
     events:
       - http:
@@ -133,11 +137,12 @@ functions:
           method: delete
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
             arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getLeaderboard:
+    name: getLeaderboard-${self:provider.stage}
     handler: src/functions/user/getLeaderboard.handler
     events:
       - http:
@@ -148,6 +153,7 @@ functions:
 
   # Text Functions
   createText:
+    name: createText-${self:provider.stage}
     handler: src/functions/text/createText.handler
     private: true
     events:
@@ -156,11 +162,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getTexts:
+    name: getTexts-${self:provider.stage}
     handler: src/functions/text/getTexts.handler
     events:
       - http:
@@ -170,6 +177,7 @@ functions:
           private: true
 
   getRandomText:
+    name: getRandomText-${self:provider.stage}
     handler: src/functions/text/getRandomText.js
     events:
       - http:
@@ -179,6 +187,7 @@ functions:
           private: true
 
   getTextById:
+    name: getTextById-${self:provider.stage}
     handler: src/functions/text/getTextById.handler
     events:
       - http:
@@ -188,6 +197,7 @@ functions:
           private: true
 
   seedTexts:
+    name: seedTexts-${self:provider.stage}
     handler: src/functions/text/seedTexts.js
     events:
       - http:
@@ -198,6 +208,7 @@ functions:
 
   # Session Functions
   createSession:
+    name: createSession-${self:provider.stage}
     handler: src/functions/session/createSession.handler
     events:
       - http:
@@ -205,11 +216,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUserSessions:
+    name: getUserSessions-${self:provider.stage}
     handler: src/functions/session/getUserSessions.handler
     events:
       - http:
@@ -217,11 +229,12 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getSessionById:
+    name: getSessionById-${self:provider.stage}
     handler: src/functions/session/getSessionById.handler
     events:
       - http:
@@ -229,11 +242,12 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   updateSession:
+    name: updateSession-${self:provider.stage}
     handler: src/functions/session/updateSession.handler
     events:
       - http:
@@ -241,11 +255,12 @@ functions:
           method: put
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   deleteSession:
+    name: deleteSession-${self:provider.stage}
     handler: src/functions/session/deleteSession.handler
     events:
       - http:
@@ -253,11 +268,12 @@ functions:
           method: delete
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getBestSessions:
+    name: getBestSessions-${self:provider.stage}
     handler: src/functions/session/getBestSessions.handler
     events:
       - http:
@@ -267,6 +283,7 @@ functions:
           private: true
 
   getRecentSessions:
+    name: getRecentSessions-${self:provider.stage}
     handler: src/functions/session/getRecentSessions.handler
     events:
       - http:
@@ -277,6 +294,7 @@ functions:
 
   # Challenge Functions
   createChallenge:
+    name: createChallenge-${self:provider.stage}
     handler: src/functions/challenge/createChallenge.handler
     events:
       - http:
@@ -284,11 +302,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getChallenge:
+    name: getChallenge-${self:provider.stage}
     handler: src/functions/challenge/getChallenge.handler
     events:
       - http:
@@ -296,11 +315,12 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   getUserChallenges:
+    name: getUserChallenges-${self:provider.stage}
     handler: src/functions/challenge/getUserChallenges.handler
     events:
       - http:
@@ -308,11 +328,12 @@ functions:
           method: get
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   acceptChallenge:
+    name: acceptChallenge-${self:provider.stage}
     handler: src/functions/challenge/acceptChallenge.handler
     events:
       - http:
@@ -320,11 +341,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   declineChallenge:
+    name: declineChallenge-${self:provider.stage}
     handler: src/functions/challenge/declineChallenge.handler
     events:
       - http:
@@ -332,12 +354,13 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   # AI Functions
   createAISession:
+    name: createAISession-${self:provider.stage}
     handler: src/functions/ai/createAISession.handler
     events:
       - http:
@@ -345,11 +368,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   generateText:
+    name: generateText-${self:provider.stage}
     handler: src/functions/ai/generateText.handler
     events:
       - http:
@@ -357,11 +381,12 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   generateFeedback:
+    name: generateFeedback-${self:provider.stage}
     handler: src/functions/ai/generateFeedback.handler
     events:
       - http:
@@ -369,15 +394,17 @@ functions:
           method: post
           cors: true
           authorizer:
-            name: cognitoAuthorizer
+            name: cognitoAuthorizer-${self:provider.stage}
             type: COGNITO_USER_POOLS
-            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId, env:USER_POOL_ID}
+            arn: ${cf:typing-practice-infrastructure-${self:provider.stage}.UserPoolId}
 
   # WebSocket Functions
   websocketAuthorizer:
+    name: websocketAuthorizer-${self:provider.stage}
     handler: src/functions/websocket/authorizer.handler
 
   websocketConnect:
+    name: websocketConnect-${self:provider.stage}
     handler: src/functions/websocket/connect.handler
     events:
       - websocket:
@@ -388,12 +415,14 @@ functions:
               - 'route.request.header.Authorization'
 
   websocketDisconnect:
+    name: websocketDisconnect-${self:provider.stage}
     handler: src/functions/websocket/disconnect.handler
     events:
       - websocket:
           route: $disconnect
 
   websocketDefault:
+    name: websocketDefault-${self:provider.stage}
     handler: src/functions/websocket/default.handler
     events:
       - websocket:
@@ -406,7 +435,7 @@ resources:
     CognitoAuthorizer:
       Type: AWS::ApiGateway::Authorizer
       Properties:
-        Name: cognitoAuthorizer
+        Name: cognitoAuthorizer-${self:provider.stage}
         Type: COGNITO_USER_POOLS
         IdentitySource: method.request.header.Authorization
         RestApiId: !Ref ApiGatewayRestApi
